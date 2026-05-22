@@ -109,3 +109,9 @@ dmypy.json
 
 # PyPI configuration file
 .pypirc
+
+# Symlinked neucbot files
+AlphaLists
+Chains
+Data
+neucbot
