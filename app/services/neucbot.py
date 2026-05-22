@@ -7,13 +7,19 @@ This module is responsible for:
   - Mapping neucBOT's output dict into structured response models
 """
 
+import os
+
 from neucbot.alpha import AlphaList, ChainAlphaList
 from neucbot.material import Composition
 from neucbot.runner import NeucbotRunner
 from neucbot.config import Config
 
 from app.models.requests import AlphaListRequest, ChainListRequest, MaterialIsotope
-from app.models.responses import CalculationResponse
+from app.models.responses import (
+    CalculationResponse,
+    FetchAlphaListsResponse,
+    FetchChainListsResponse,
+)
 
 # Config used for all web requests: json=True makes NeucbotRunner return a dict
 # rather than printing to stdout, and suppresses the tqdm progress bar.
@@ -36,7 +42,15 @@ def material_json(material: list[MaterialIsotope]) -> dict:
     }
 
 
-def run_alpha_list(
+def fetch_alpha_lists() -> FetchAlphaListsResponse:
+    return FetchAlphaListsResponse(
+        elements=sorted(
+            [file.removesuffix("Alphas.dat") for file in os.listdir("AlphaLists")]
+        )
+    )
+
+
+def calculate_alpha_list(
     material: list[MaterialIsotope],
     alpha_list: AlphaList,
 ) -> CalculationResponse:
@@ -46,7 +60,9 @@ def run_alpha_list(
     if alpha_list.alphas:
         alpha_list_obj = AlphaList.from_json(alpha_list.alphas)
     else:
-        alpha_list_obj = AlphaList.from_filepath(f"AlphaLists/{alpha_list.element}Alphas.dat")
+        alpha_list_obj = AlphaList.from_filepath(
+            f"AlphaLists/{alpha_list.element}Alphas.dat"
+        )
         alpha_list_obj.load_or_fetch()
 
     result = neucbot_runner.run(alpha_list_obj, composition)
@@ -58,7 +74,13 @@ def run_alpha_list(
     )
 
 
-def run_chain_list(
+def fetch_chain_lists() -> FetchChainListsResponse:
+    return FetchChainListsResponse(
+        chains=sorted([file.removesuffix("Chain.dat") for file in os.listdir("Chains")])
+    )
+
+
+def calculate_chain_list(
     material: list[MaterialIsotope],
     chain_list: list,
 ) -> CalculationResponse:
@@ -66,7 +88,9 @@ def run_chain_list(
     composition = Composition.from_json(material_json(material), data_source_class)
 
     if chain_list.element:
-        chain_alpha_list = ChainAlphaList.from_filepath(f"Chains/{chain_list.element}Chain.dat")
+        chain_alpha_list = ChainAlphaList.from_filepath(
+            f"Chains/{chain_list.element}Chain.dat"
+        )
         chain_alpha_list.load_or_fetch()
     else:
         chain_alpha_list = ChainAlphaList.from_json(chain_list.chain)

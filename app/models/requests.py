@@ -5,7 +5,9 @@ from typing import Optional
 class MaterialIsotope(BaseModel):
     """A single isotope entry in a material composition."""
 
-    symbol: str = Field(..., description="Chemical symbol of the element (e.g. 'C', 'O')")
+    symbol: str = Field(
+        ..., description="Chemical symbol of the element (e.g. 'C', 'O')"
+    )
     mass_number: int = Field(
         ...,
         description="Mass number of the isotope. Use 0 to include all natural isotopes at natural abundance.",
@@ -31,7 +33,6 @@ class AlphaList(BaseModel):
             raise ValueError("Expected one of: 'alphas' and 'element'")
 
         return data
-
 
 
 class AlphaListRequest(BaseModel):
@@ -80,12 +81,14 @@ class ChainList(BaseModel):
 
         return data
 
+
 class ChainListRequest(BaseModel):
     material: list[MaterialIsotope] = Field(
         ..., description="List of isotopes making up the target material"
     )
     chain_list: ChainList = Field(
-        ..., description="Map of decay chain isotopes to branching ratios, or an element of a preloaded chain"
+        ...,
+        description="Map of decay chain isotopes to branching ratios, or an element of a preloaded chain",
     )
 
     model_config = {
