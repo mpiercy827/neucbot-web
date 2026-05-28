@@ -1,0 +1,46 @@
+<div class="card mb-3">
+  <div class="card-header d-flex justify-content-between align-items-center">
+    Decay Chain
+    <div class="btn-group btn-group-sm">
+      <button type="button" class="btn"
+              :class="mode === 'preloaded' ? 'btn-primary' : 'btn-outline-primary'"
+              @click="mode = 'preloaded'">Preloaded</button>
+      <button type="button" class="btn"
+              :class="mode === 'custom' ? 'btn-primary' : 'btn-outline-primary'"
+              @click="mode = 'custom'">Custom</button>
+    </div>
+  </div>
+  <div class="card-body">
+    <div x-show="mode === 'preloaded'">
+      <select class="form-select" x-model="chain">
+        <template x-for="c in availableChains" :key="c">
+          <option :value="c" x-text="c"></option>
+        </template>
+      </select>
+    </div>
+    <div x-show="mode === 'custom'">
+      <div class="row text-muted small mb-1 px-1">
+        <div class="col-5">Isotope</div>
+        <div class="col">Branching Ratio (%)</div>
+      </div>
+      <template x-for="(entry, i) in customChain" :key="i">
+        <div class="row mb-2">
+          <div class="col-5">
+            <input class="form-control form-control-sm" type="text"
+                   x-model="entry.isotope" placeholder="Th232">
+          </div>
+          <div class="col">
+            <input class="form-control form-control-sm" type="number" step="0.01"
+                   x-model.number="entry.branching_ratio" placeholder="100">
+          </div>
+          <div class="col-auto">
+            <button class="btn btn-sm btn-outline-danger" type="button"
+                    @click="customChain.splice(i, 1)" x-show="customChain.length > 1">&times;</button>
+          </div>
+        </div>
+      </template>
+      <button class="btn btn-sm btn-outline-secondary" type="button"
+              @click="customChain.push({ isotope: '', branching_ratio: '' })">+ Add Isotope</button>
+    </div>
+  </div>
+</div>

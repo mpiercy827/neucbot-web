@@ -1,7 +1,8 @@
 import logging
 
 from fastapi import FastAPI
-from app.routers import alpha_lists, chain_lists
+from fastapi.staticfiles import StaticFiles
+from app.routers import alpha_lists, chain_lists, views
 
 logging.basicConfig(
     level=logging.INFO,
@@ -14,6 +15,8 @@ app = FastAPI(
     version="0.1.0",
 )
 
+app.mount("/static", StaticFiles(directory="app/static"), name="static")
+app.include_router(views.router)
 app.include_router(alpha_lists.router, prefix="/api")
 app.include_router(chain_lists.router, prefix="/api")
 
