@@ -1,5 +1,12 @@
+import logging
+
 from fastapi import FastAPI
 from app.routers import alpha_lists, chain_lists
+
+logging.basicConfig(
+    level=logging.INFO,
+    format="%(asctime)s %(levelname)s %(name)s: %(message)s",
+)
 
 app = FastAPI(
     title="neucBOT Web API",

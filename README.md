@@ -27,10 +27,10 @@ neucbot-web/
 
 ```bash
 # Build the image
-docker build -t neucbot-web .
+make build
 
 # Run
-docker run -p 8000:8000 neucbot-web
+make run
 ```
 
 Visit `localhost:8080/docs` in your browser to inspect and test the API endpoints
