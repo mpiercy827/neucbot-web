@@ -12,14 +12,15 @@
   </div>
   <div class="card-body">
     <div x-show="mode === 'preloaded'">
-      <select class="form-select" x-model="element">
+      <select class="form-select" x-model="element" :disabled="availableElements.length === 0">
+        <option value="" disabled x-show="availableElements.length === 0">Loading…</option>
         <template x-for="el in availableElements" :key="el">
           <option :value="el" x-text="el"></option>
         </template>
       </select>
     </div>
     <div x-show="mode === 'custom'">
-      <div class="row text-muted small mb-1 px-1">
+      <div class="row text-secondary small fw-medium mb-1 px-1">
         <div class="col-5">Energy (MeV)</div>
         <div class="col">Probability (%)</div>
       </div>

@@ -1,15 +1,23 @@
 <div x-show="result" class="card">
   <div class="card-header">Results</div>
   <div class="card-body">
-    <dl class="row mb-3">
-      <dt class="col-sm-5">Total Neutron Yield (n/decay)</dt>
-      <dd class="col-sm-7 font-monospace" x-text="result?.total_neutron_yield?.toExponential(4)"></dd>
-      <dt class="col-sm-5">Spectrum Integral (n/decay)</dt>
-      <dd class="col-sm-7 font-monospace" x-text="result?.spectrum_integral?.toExponential(4)"></dd>
-    </dl>
+    <div class="row g-3 mb-4">
+      <div class="col-sm-6">
+        <div class="bg-light rounded p-3">
+          <div class="text-secondary small">Total Neutron Yield (n/decay)</div>
+          <div class="font-monospace fs-5" x-text="result?.total_neutron_yield?.toExponential(4)"></div>
+        </div>
+      </div>
+      <div class="col-sm-6">
+        <div class="bg-light rounded p-3">
+          <div class="text-secondary small">Spectrum Integral (n/decay)</div>
+          <div class="font-monospace fs-5" x-text="result?.spectrum_integral?.toExponential(4)"></div>
+        </div>
+      </div>
+    </div>
     <div class="row">
       <div class="col-md-6">
-        <h6>Isotope Contributions</h6>
+        <h6 class="border-bottom pb-2 mb-2">Isotope Contributions</h6>
         <table class="table table-sm table-hover">
           <thead><tr><th>Isotope</th><th>Yield (n/decay)</th></tr></thead>
           <tbody>
@@ -23,7 +31,7 @@
         </table>
       </div>
       <div class="col-md-6">
-        <h6>Neutron Spectrum</h6>
+        <h6 class="border-bottom pb-2 mb-2">Neutron Spectrum</h6>
         <div style="max-height: 300px; overflow-y: auto;">
           <table class="table table-sm table-hover">
             <thead><tr><th>Energy (keV)</th><th>Yield (n/decay)</th></tr></thead>

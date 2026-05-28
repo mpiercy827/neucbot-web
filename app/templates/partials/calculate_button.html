@@ -1,5 +1,10 @@
-<button class="btn btn-primary mb-3" type="button" @click="calculate()" :disabled="loading">
-  <span x-show="loading" class="spinner-border spinner-border-sm me-1"></span>
-  <span x-text="loading ? 'Calculating…' : 'Calculate'"></span>
-</button>
-<div x-show="error" class="alert alert-danger mb-3" x-text="error"></div>
+<div class="d-grid d-md-block mb-3">
+  <button class="btn btn-primary" type="button" @click="calculate()" :disabled="loading">
+    <span x-show="loading" class="spinner-border spinner-border-sm me-1"></span>
+    <span x-text="loading ? 'Calculating…' : 'Calculate'"></span>
+  </button>
+</div>
+<div x-show="error" class="alert alert-danger alert-dismissible mb-3" role="alert">
+  <span x-text="error"></span>
+  <button type="button" class="btn-close" @click="error = null"></button>
+</div>
