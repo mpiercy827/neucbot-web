@@ -17,6 +17,14 @@ document.addEventListener('alpine:init', () => {
       this.element = elements[0] ?? '';
     },
 
+    validate() {
+      if (this.isotopes.some(iso => !iso.symbol.trim() || !(iso.mass_fraction > 0)))
+        return 'Material Composition: isotopes require a symbol and a mass fraction greater than 0.';
+      if (this.mode === 'custom' && this.customAlphas.some(a => !(a.energy > 0) || !(a.probability > 0)))
+        return 'Alpha energy: each entry requires an energy and probability greater than 0.';
+      return null;
+    },
+
     buildRequest() {
       const alpha_list = this.mode === 'preloaded'
         ? { element: this.element }
@@ -25,6 +33,8 @@ document.addEventListener('alpine:init', () => {
     },
 
     async calculate() {
+      const err = this.validate();
+      if (err) { this.error = err; return; }
       this.loading = true;
       this.error = null;
       this.result = null;
@@ -61,6 +71,14 @@ document.addEventListener('alpine:init', () => {
       this.chain = chains[0] ?? '';
     },
 
+    validate() {
+      if (this.isotopes.some(iso => !iso.symbol.trim() || !(iso.mass_fraction > 0)))
+        return 'Material composition: isotopes require a symbol and a mass fraction greater than 0.';
+      if (this.mode === 'custom' && this.customChain.some(c => !c.isotope.trim() || !(c.branching_ratio > 0)))
+        return 'Chain List: each entry requires an isotope and a branching ratio greater than 0.';
+      return null;
+    },
+
     buildRequest() {
       const chain_list = this.mode === 'preloaded'
         ? { element: this.chain }
@@ -69,6 +87,8 @@ document.addEventListener('alpine:init', () => {
     },
 
     async calculate() {
+      const err = this.validate();
+      if (err) { this.error = err; return; }
       this.loading = true;
       this.error = null;
       this.result = null;
