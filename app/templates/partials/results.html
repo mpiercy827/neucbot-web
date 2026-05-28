@@ -7,17 +7,37 @@
       <dt class="col-sm-5">Spectrum Integral (n/decay)</dt>
       <dd class="col-sm-7 font-monospace" x-text="result?.spectrum_integral?.toExponential(4)"></dd>
     </dl>
-    <h6>Isotope Contributions</h6>
-    <table class="table table-sm table-hover">
-      <thead><tr><th>Isotope</th><th>Yield (n/decay)</th></tr></thead>
-      <tbody>
-        <template x-for="[isotope, value] in Object.entries(result?.isotope_contributions ?? {})">
-          <tr>
-            <td x-text="isotope"></td>
-            <td class="font-monospace" x-text="value.toExponential(4)"></td>
-          </tr>
-        </template>
-      </tbody>
-    </table>
+    <div class="row">
+      <div class="col-md-6">
+        <h6>Isotope Contributions</h6>
+        <table class="table table-sm table-hover">
+          <thead><tr><th>Isotope</th><th>Yield (n/decay)</th></tr></thead>
+          <tbody>
+            <template x-for="[isotope, value] in Object.entries(result?.isotope_contributions ?? {})">
+              <tr>
+                <td x-text="isotope"></td>
+                <td class="font-monospace" x-text="value.toExponential(4)"></td>
+              </tr>
+            </template>
+          </tbody>
+        </table>
+      </div>
+      <div class="col-md-6">
+        <h6>Neutron Spectrum</h6>
+        <div style="max-height: 300px; overflow-y: auto;">
+          <table class="table table-sm table-hover">
+            <thead><tr><th>Energy (keV)</th><th>Yield (n/decay)</th></tr></thead>
+            <tbody>
+              <template x-for="[energy, value] in Object.entries(result?.neutron_spectrum ?? {})">
+                <tr>
+                  <td class="font-monospace" x-text="energy"></td>
+                  <td class="font-monospace" x-text="value.toExponential(4)"></td>
+                </tr>
+              </template>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
   </div>
 </div>
