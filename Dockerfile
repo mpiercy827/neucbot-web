@@ -49,6 +49,6 @@ RUN rm -rf v${SLIM_TALYS_VERSION}.tar.gz talys_slim-${TALYS_VERSION}/
 # Copy over app files
 COPY ./app ./app
 
-EXPOSE 8000
+EXPOSE $PORT
 
-CMD ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8000"]
+CMD exec uvicorn app.main:app --host 0.0.0.0 --port ${PORT:-8000}
