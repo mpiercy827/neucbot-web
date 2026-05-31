@@ -9,12 +9,14 @@ document.addEventListener('alpine:init', () => {
     result: null,
     loading: false,
     error: null,
+    chart: null,
 
     async init() {
       const res = await fetch('/api/alpha_lists');
       const { elements } = await res.json();
       this.availableElements = elements;
       this.element = elements[0] ?? '';
+      this.$watch('result', () => this.renderChart());
     },
 
     validate() {
@@ -52,6 +54,53 @@ document.addEventListener('alpine:init', () => {
         this.loading = false;
       }
     },
+
+    renderChart() {
+      if (this.chart) {
+        this.chart.destroy();
+        this.chart = null;
+      }
+      if (!this.result?.neutron_spectrum) return;
+
+      const points = Object.entries(this.result.neutron_spectrum)
+        .map(([e, y]) => ({ x: parseFloat(e), y }))
+        .sort((a, b) => a.x - b.x);
+
+      this.chart = new Chart(this.$refs.spectrumChart, {
+        type: 'scatter',
+        data: {
+          datasets: [{
+            label: 'Neutron Yield',
+            data: points,
+            showLine: true,
+            fill: false,
+            borderColor: '#0d6efd',
+            pointRadius: 2,
+          }]
+        },
+        options: {
+          responsive: true,
+          scales: {
+            x: {
+              title: { display: true, text: 'Energy (keV)' } ,
+              ticks: { stepSize: 1000 }
+            },
+            y: {
+              title: { display: true, text: 'Yield (n/decay)' },
+              ticks: { callback: (value) => value.toExponential(5) },
+            },
+          },
+          plugins: {
+            legend: { display: false },
+            tooltip: {
+              callbacks: {
+                label: (ctx) => `(${ctx.parsed.x}, ${ctx.parsed.y.toExponential(5)})`,
+              }
+            }
+          },
+        }
+      });
+    },
   }));
 
   Alpine.data('chainCalculator', () => ({
@@ -63,12 +112,14 @@ document.addEventListener('alpine:init', () => {
     result: null,
     loading: false,
     error: null,
+    chart: null,
 
     async init() {
       const res = await fetch('/api/chain_lists');
       const { chains } = await res.json();
       this.availableChains = chains;
       this.chain = chains[0] ?? '';
+      this.$watch('result', () => this.renderChart());
     },
 
     validate() {
@@ -105,6 +156,53 @@ document.addEventListener('alpine:init', () => {
       } finally {
         this.loading = false;
       }
+    },
+
+    renderChart() {
+      if (this.chart) {
+        this.chart.destroy();
+        this.chart = null;
+      }
+      if (!this.result?.neutron_spectrum) return;
+
+      const points = Object.entries(this.result.neutron_spectrum)
+        .map(([e, y]) => ({ x: parseFloat(e), y }))
+        .sort((a, b) => a.x - b.x);
+
+      this.chart = new Chart(this.$refs.spectrumChart, {
+        type: 'scatter',
+        data: {
+          datasets: [{
+            label: 'Neutron Yield',
+            data: points,
+            showLine: true,
+            fill: false,
+            borderColor: '#0d6efd',
+            pointRadius: 2,
+          }]
+        },
+        options: {
+          responsive: true,
+          scales: {
+            x: {
+              title: { display: true, text: 'Energy (keV)' } ,
+              ticks: { stepSize: 1000 }
+            },
+            y: {
+              title: { display: true, text: 'Yield (n/decay)' },
+              ticks: { callback: (value) => value.toExponential(5) },
+            },
+          },
+          plugins: {
+            legend: { display: false },
+            tooltip: {
+              callbacks: {
+                label: (ctx) => `(${ctx.parsed.x}, ${ctx.parsed.y.toExponential(5)})`,
+              }
+            }
+          },
+        }
+      });
     },
   }));
 
