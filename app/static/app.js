@@ -2,8 +2,11 @@ document.addEventListener('alpine:init', () => {
 
   Alpine.data('alphaCalculator', () => ({
     availableElements: [],
+    availableMaterials: [],
     mode: 'preloaded',
+    materialMode: 'preloaded',
     element: '',
+    material: '',
     customAlphas: [{ energy: '', probability: '' }],
     isotopes: [{ symbol: '', mass_number: 0, mass_fraction: '' }],
     result: null,
@@ -12,15 +15,21 @@ document.addEventListener('alpine:init', () => {
     chart: null,
 
     async init() {
-      const res = await fetch('/api/alpha_lists');
-      const { elements } = await res.json();
+      const [alphaRes, materialRes] = await Promise.all([
+        fetch('/api/alpha_lists'),
+        fetch('/api/materials'),
+      ]);
+      const { elements } = await alphaRes.json();
+      const { materials } = await materialRes.json();
       this.availableElements = elements;
       this.element = elements[0] ?? '';
+      this.availableMaterials = materials;
+      this.material = materials[0] ?? '';
       this.$watch('result', () => this.renderChart());
     },
 
     validate() {
-      if (this.isotopes.some(iso => !iso.symbol.trim() || !(iso.mass_fraction > 0)))
+      if (this.materialMode === 'custom' && this.isotopes.some(iso => !iso.symbol.trim() || !(iso.mass_fraction > 0)))
         return 'Material Composition: isotopes require a symbol and a mass fraction greater than 0.';
       if (this.mode === 'custom' && this.customAlphas.some(a => !(a.energy > 0) || !(a.probability > 0)))
         return 'Alpha energy: each entry requires an energy and probability greater than 0.';
@@ -28,10 +37,13 @@ document.addEventListener('alpine:init', () => {
     },
 
     buildRequest() {
+      const material = this.materialMode === 'preloaded'
+        ? { name: this.material }
+        : { isotopes: this.isotopes };
       const alpha_list = this.mode === 'preloaded'
         ? { element: this.element }
         : { alphas: Object.fromEntries(this.customAlphas.map(a => [a.energy, a.probability])) };
-      return { material: this.isotopes, alpha_list };
+      return { material, alpha_list };
     },
 
     async calculate() {
@@ -65,6 +77,8 @@ document.addEventListener('alpine:init', () => {
       const points = Object.entries(this.result.neutron_spectrum)
         .map(([e, y]) => ({ x: parseFloat(e), y }))
         .sort((a, b) => a.x - b.x);
+
+      if (points.length === 0) return;
 
       this.chart = new Chart(this.$refs.spectrumChart, {
         type: 'scatter',
@@ -105,8 +119,11 @@ document.addEventListener('alpine:init', () => {
 
   Alpine.data('chainCalculator', () => ({
     availableChains: [],
+    availableMaterials: [],
     mode: 'preloaded',
+    materialMode: 'preloaded',
     chain: '',
+    material: '',
     customChain: [{ isotope: '', branching_ratio: '' }],
     isotopes: [{ symbol: '', mass_number: 0, mass_fraction: '' }],
     result: null,
@@ -115,15 +132,21 @@ document.addEventListener('alpine:init', () => {
     chart: null,
 
     async init() {
-      const res = await fetch('/api/chain_lists');
-      const { chains } = await res.json();
+      const [chainRes, materialRes] = await Promise.all([
+        fetch('/api/chain_lists'),
+        fetch('/api/materials'),
+      ]);
+      const { chains } = await chainRes.json();
+      const { materials } = await materialRes.json();
       this.availableChains = chains;
       this.chain = chains[0] ?? '';
+      this.availableMaterials = materials;
+      this.material = materials[0] ?? '';
       this.$watch('result', () => this.renderChart());
     },
 
     validate() {
-      if (this.isotopes.some(iso => !iso.symbol.trim() || !(iso.mass_fraction > 0)))
+      if (this.materialMode === 'custom' && this.isotopes.some(iso => !iso.symbol.trim() || !(iso.mass_fraction > 0)))
         return 'Material composition: isotopes require a symbol and a mass fraction greater than 0.';
       if (this.mode === 'custom' && this.customChain.some(c => !c.isotope.trim() || !(c.branching_ratio > 0)))
         return 'Chain List: each entry requires an isotope and a branching ratio greater than 0.';
@@ -131,10 +154,13 @@ document.addEventListener('alpine:init', () => {
     },
 
     buildRequest() {
+      const material = this.materialMode === 'preloaded'
+        ? { name: this.material }
+        : { isotopes: this.isotopes };
       const chain_list = this.mode === 'preloaded'
         ? { element: this.chain }
         : { chain: Object.fromEntries(this.customChain.map(c => [c.isotope, c.branching_ratio])) };
-      return { material: this.isotopes, chain_list };
+      return { material, chain_list };
     },
 
     async calculate() {
@@ -168,6 +194,8 @@ document.addEventListener('alpine:init', () => {
       const points = Object.entries(this.result.neutron_spectrum)
         .map(([e, y]) => ({ x: parseFloat(e), y }))
         .sort((a, b) => a.x - b.x);
+
+      if (points.length === 0) return;
 
       this.chart = new Chart(this.$refs.spectrumChart, {
         type: 'scatter',

@@ -39,3 +39,10 @@ class FetchChainListsResponse(BaseModel):
     chains: list[str] = Field(
         ..., description="List of preconstructed chains which are available to neucbot"
     )
+
+
+class FetchMaterialsResponse(BaseModel):
+    materials: list[str] = Field(
+        ...,
+        description="List of preconstructed materials which are available to neucbot",
+    )

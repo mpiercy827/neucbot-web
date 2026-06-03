@@ -1,32 +1,52 @@
 <div class="card mb-3">
-  <div class="card-header">Material Composition</div>
-  <div class="card-body">
-    <div class="row text-secondary small fw-medium mb-1 px-1">
-      <div class="col-3">Symbol</div>
-      <div class="col-3">Mass Number</div>
-      <div class="col">Mass Fraction (%)</div>
+  <div class="card-header d-flex justify-content-between align-items-center">
+    Material Composition
+    <div class="btn-group btn-group-sm">
+      <button type="button" class="btn"
+              :class="materialMode === 'preloaded' ? 'btn-primary' : 'btn-outline-primary'"
+              @click="materialMode = 'preloaded'">Preloaded</button>
+      <button type="button" class="btn"
+              :class="materialMode === 'custom' ? 'btn-primary' : 'btn-outline-primary'"
+              @click="materialMode = 'custom'">Custom</button>
     </div>
-    <template x-for="(iso, i) in isotopes" :key="i">
-      <div class="row mb-2">
-        <div class="col-3">
-          <input class="form-control form-control-sm" type="text"
-                 x-model="iso.symbol" placeholder="C">
-        </div>
-        <div class="col-3">
-          <input class="form-control form-control-sm" type="number"
-                 x-model.number="iso.mass_number" placeholder="0">
-        </div>
-        <div class="col">
-          <input class="form-control form-control-sm" type="number" step="0.001"
-                 x-model.number="iso.mass_fraction" placeholder="50.0">
-        </div>
-        <div class="col-auto">
-          <button class="btn btn-sm btn-outline-danger" type="button"
-                  @click="isotopes.splice(i, 1)" x-show="isotopes.length > 1">&times;</button>
-        </div>
+  </div>
+  <div class="card-body">
+    <div x-show="materialMode === 'preloaded'">
+      <select class="form-select" x-model="material" :disabled="availableMaterials.length === 0">
+        <option value="" disabled x-show="availableMaterials.length === 0">Loading…</option>
+        <template x-for="m in availableMaterials" :key="m">
+          <option :value="m" x-text="m"></option>
+        </template>
+      </select>
+    </div>
+    <div x-show="materialMode === 'custom'">
+      <div class="row text-secondary small fw-medium mb-1 px-1">
+        <div class="col-3">Symbol</div>
+        <div class="col-3">Mass Number</div>
+        <div class="col">Mass Fraction (%)</div>
       </div>
-    </template>
-    <button class="btn btn-sm btn-outline-secondary" type="button"
-            @click="isotopes.push({ symbol: '', mass_number: 0, mass_fraction: '' })">+ Add Isotope</button>
+      <template x-for="(iso, i) in isotopes" :key="i">
+        <div class="row mb-2">
+          <div class="col-3">
+            <input class="form-control form-control-sm" type="text"
+                   x-model="iso.symbol" placeholder="C">
+          </div>
+          <div class="col-3">
+            <input class="form-control form-control-sm" type="number"
+                   x-model.number="iso.mass_number" placeholder="0">
+          </div>
+          <div class="col">
+            <input class="form-control form-control-sm" type="number" step="0.001"
+                   x-model.number="iso.mass_fraction" placeholder="50.0">
+          </div>
+          <div class="col-auto">
+            <button class="btn btn-sm btn-outline-danger" type="button"
+                    @click="isotopes.splice(i, 1)" x-show="isotopes.length > 1">&times;</button>
+          </div>
+        </div>
+      </template>
+      <button class="btn btn-sm btn-outline-secondary" type="button"
+              @click="isotopes.push({ symbol: '', mass_number: 0, mass_fraction: '' })">+ Add Isotope</button>
+    </div>
   </div>
 </div>

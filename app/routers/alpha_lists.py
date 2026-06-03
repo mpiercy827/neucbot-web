@@ -23,4 +23,6 @@ def calculate_alpha_list(request: AlphaListRequest):
         )
     except Exception:
         logger.exception("alpha_lists calculation failed | request=%s", request)
-        raise HTTPException(status_code=500, detail="Calculation failed — Internal Server Error.")
+        raise HTTPException(
+            status_code=500, detail="Calculation failed — Internal Server Error."
+        )

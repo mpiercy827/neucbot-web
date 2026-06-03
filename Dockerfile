@@ -15,7 +15,6 @@ RUN python -m venv /opt/venv
 ENV PATH="/opt/venv/bin:$PATH"
 
 RUN pip install --no-cache-dir -r requirements.txt
-RUN python3 preprocess_ENSDF.py
 
 # # neucbot-web build stage
 FROM python:3.14-slim
@@ -39,6 +38,7 @@ COPY --from=neucbot /neucbot/neucbot/ ./neucbot
 COPY --from=neucbot /neucbot/AlphaLists/ ./AlphaLists
 COPY --from=neucbot /neucbot/Chains/ ./Chains
 COPY --from=neucbot /neucbot/Data/ ./Data
+COPY --from=neucbot /neucbot/Materials/ ./Materials
 
 # Download TALYS-slim data
 RUN wget https://github.com/mpiercy827/talys_slim/archive/refs/tags/v${SLIM_TALYS_VERSION}.tar.gz

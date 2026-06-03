@@ -23,4 +23,6 @@ def calculate_chain_list(request: ChainListRequest):
         )
     except Exception:
         logger.exception("chain_lists calculation failed | request=%s", request)
-        raise HTTPException(status_code=500, detail="Calculation failed — Internal Server Error.")
+        raise HTTPException(
+            status_code=500, detail="Calculation failed — Internal Server Error."
+        )

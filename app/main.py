@@ -2,7 +2,7 @@ import logging
 
 from fastapi import FastAPI
 from fastapi.staticfiles import StaticFiles
-from app.routers import alpha_lists, chain_lists, views
+from app.routers import alpha_lists, chain_lists, materials, views
 
 logging.basicConfig(
     level=logging.INFO,
@@ -19,6 +19,7 @@ app.mount("/static", StaticFiles(directory="app/static"), name="static")
 app.include_router(views.router)
 app.include_router(alpha_lists.router, prefix="/api")
 app.include_router(chain_lists.router, prefix="/api")
+app.include_router(materials.router, prefix="/api")
 
 
 @app.get("/health")

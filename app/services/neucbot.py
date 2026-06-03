@@ -14,11 +14,12 @@ from neucbot.material import Composition
 from neucbot.runner import NeucbotRunner
 from neucbot.config import Config
 
-from app.models.requests import AlphaListRequest, ChainListRequest, MaterialIsotope
+from app.models.requests import AlphaListRequest, ChainListRequest, Material
 from app.models.responses import (
     CalculationResponse,
     FetchAlphaListsResponse,
     FetchChainListsResponse,
+    FetchMaterialsResponse,
 )
 
 # Config used for all web requests: json=True makes NeucbotRunner return a dict
@@ -26,6 +27,29 @@ from app.models.responses import (
 neucbot_config = Config({"json": True})
 data_source_class = neucbot_config.data_source_class
 neucbot_runner = NeucbotRunner(neucbot_config)
+
+
+def fetch_materials() -> FetchMaterialsResponse:
+    return FetchMaterialsResponse(
+        materials=sorted(
+            [
+                file.removesuffix(".dat").replace("_", " ")
+                for file in os.listdir("Materials")
+            ]
+        )
+    )
+
+
+def material_composition_from_request(material: Material) -> Composition:
+    if material.isotopes:
+        return Composition.from_json(
+            material_json(material.isotopes), data_source_class
+        )
+    else:
+        return Composition.from_file(
+            f"Materials/{material.name.replace(' ', '_')}.dat",
+            data_source_class
+        )
 
 
 def material_json(material: list[MaterialIsotope]) -> dict:
@@ -50,22 +74,27 @@ def fetch_alpha_lists() -> FetchAlphaListsResponse:
     )
 
 
-def calculate_alpha_list(
-    material: list[MaterialIsotope],
-    alpha_list: AlphaList,
-) -> CalculationResponse:
-    """Run a neucBOT alpha list calculation."""
-    composition = Composition.from_json(material_json(material), data_source_class)
-
+def alpha_list_from_request(alpha_list):
     if alpha_list.alphas:
-        alpha_list_obj = AlphaList.from_json(alpha_list.alphas)
+        return AlphaList.from_json(alpha_list.alphas)
     else:
         alpha_list_obj = AlphaList.from_filepath(
             f"AlphaLists/{alpha_list.element}Alphas.dat"
         )
         alpha_list_obj.load_or_fetch()
 
-    result = neucbot_runner.run(alpha_list_obj, composition)
+        return alpha_list_obj
+
+
+def calculate_alpha_list(
+    material: Material,
+    alpha_list: AlphaList,
+) -> CalculationResponse:
+    """Run a neucBOT alpha list calculation."""
+    composition = material_composition_from_request(material)
+    alphas = alpha_list_from_request(alpha_list)
+
+    result = neucbot_runner.run(alphas, composition)
     return CalculationResponse(
         total_neutron_yield=result["total_neutron_yield"],
         spectrum_integral=result["spectrum_integral"],
@@ -80,22 +109,26 @@ def fetch_chain_lists() -> FetchChainListsResponse:
     )
 
 
-def calculate_chain_list(
-    material: list[MaterialIsotope],
-    chain_list: list,
-) -> CalculationResponse:
-    """Run a neucBOT decay chain calculation."""
-    composition = Composition.from_json(material_json(material), data_source_class)
-
+def chain_list_from_request(chain_list):
     if chain_list.element:
         chain_alpha_list = ChainAlphaList.from_filepath(
             f"Chains/{chain_list.element}Chain.dat"
         )
         chain_alpha_list.load_or_fetch()
+        return chain_alpha_list
     else:
-        chain_alpha_list = ChainAlphaList.from_json(chain_list.chain)
+        return ChainAlphaList.from_json(chain_list.chain)
 
-    result = neucbot_runner.run(chain_alpha_list, composition)
+
+def calculate_chain_list(
+    material: Material,
+    chain_list: list,
+) -> CalculationResponse:
+    """Run a neucBOT decay chain calculation."""
+    composition = material_composition_from_request(material)
+    chain_alphas = chain_list_from_request(chain_list)
+
+    result = neucbot_runner.run(chain_alphas, composition)
 
     return CalculationResponse(
         total_neutron_yield=result["total_neutron_yield"],

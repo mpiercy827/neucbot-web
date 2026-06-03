@@ -17,6 +17,22 @@ class MaterialIsotope(BaseModel):
     )
 
 
+class Material(BaseModel):
+    name: Optional[str] = None
+
+    isotopes: Optional[list[MaterialIsotope]] = None
+
+    @model_validator(mode="before")
+    @classmethod
+    def check_mutually_exclusive(cls, data):
+        if data.get("name") and data.get("isotopes"):
+            raise ValueError("Expected either 'name' and 'isotopes', not both")
+        elif not data.get("name") and not data.get("isotopes"):
+            raise ValueError("Expected one of: 'name' and 'isotopes'")
+
+        return data
+
+
 class AlphaList(BaseModel):
     """An alpha list object."""
 
@@ -36,7 +52,7 @@ class AlphaList(BaseModel):
 
 
 class AlphaListRequest(BaseModel):
-    material: list[MaterialIsotope] = Field(
+    material: Material = Field(
         ..., description="List of isotopes making up the target material"
     )
     alpha_list: AlphaList = Field(
@@ -83,7 +99,7 @@ class ChainList(BaseModel):
 
 
 class ChainListRequest(BaseModel):
-    material: list[MaterialIsotope] = Field(
+    material: Material = Field(
         ..., description="List of isotopes making up the target material"
     )
     chain_list: ChainList = Field(
