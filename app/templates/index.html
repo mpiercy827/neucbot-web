@@ -12,7 +12,7 @@
 
 <div class="tab-content">
   <div class="tab-pane fade show active" id="alpha-pane">
-    <div x-data="alphaCalculator()">
+    <div x-data="alphaCalculator()" x-cloak>
       <div class="row">
         <div class="col-md-6">{% include "partials/alpha_source.html" %}</div>
         <div class="col-md-6">{% include "partials/material_form.html" %}</div>
@@ -22,7 +22,7 @@
     </div>
   </div>
   <div class="tab-pane fade" id="chain-pane">
-    <div x-data="chainCalculator()">
+    <div x-data="chainCalculator()" x-cloak>
       <div class="row">
         <div class="col-md-6">{% include "partials/chain_source.html" %}</div>
         <div class="col-md-6">{% include "partials/material_form.html" %}</div>
