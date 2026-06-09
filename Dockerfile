@@ -6,9 +6,12 @@ RUN apt-get -y update \
 
 WORKDIR /
 
+ENV NEUCBOT_GIT_SHA="50a0b5611f71bc45f59baea663825854bb13eaed"
 RUN git clone https://github.com/shawest/neucbot
 
 WORKDIR /neucbot
+
+RUN git checkout $NEUCBOT_GIT_SHA
 
 # Setup virtual env
 RUN python -m venv /opt/venv
