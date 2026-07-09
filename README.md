@@ -109,6 +109,22 @@ fastapi dev app/main.py
 The API will be available at http://localhost:8000.
 Interactive docs (Swagger UI) will be at http://localhost:8000/docs.
 
+## Deployments
+
+To deploy this application to the ucr-ursa-major-sbc Google Cloud project, run:
+
+```bash
+make deploy
+```
+
+A deployment (which requires Docker to be installed locally) runs the following steps:
+
+1. Builds a Docker image
+2. Pushes that image to the neucbot-web image registry
+3. Deploys the latest image using `gcloud run deploy`
+
+For more information, see the `Makefile`.
+
 ## API Endpoints
 
 | Method | Path | Description |
@@ -122,3 +138,7 @@ Interactive docs (Swagger UI) will be at http://localhost:8000/docs.
 | GET | `/api/materials` | Lists available preloaded materials |
 
 See `/docs` for full request/response schemas and example payloads.
+
+## TODO
+
+- [ ] Add unit tests for backend + frontend components
