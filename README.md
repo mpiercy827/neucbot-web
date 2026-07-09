@@ -10,13 +10,21 @@ neucbot-web/
 ├── app/
 │   ├── main.py                  # FastAPI app, router registration
 │   ├── routers/
-│   │   ├── alpha_lists.py       # POST /api/alpha_lists
-│   │   └── chain_lists.py       # POST /api/chain_lists
+│   │   ├── alpha_lists.py       # GET+POST /api/alpha_lists
+│   │   ├── chain_lists.py       # GET+POST /api/chain_lists
+│   │   ├── materials.py         # GET /api/materials
+│   │   └── views.py             # GET / (web UI)
 │   ├── models/
 │   │   ├── requests.py          # Pydantic request schemas
 │   │   └── responses.py         # Pydantic response schemas
-│   └── services/
-│       └── neucbot.py           # neucBOT calculations
+│   ├── services/
+│   │   └── neucbot.py           # neucBOT calculations
+│   ├── static/
+│   │   └── app.js               # Frontend JavaScript (Alpine.js components)
+│   └── templates/
+│       ├── base.html            # Base layout
+│       ├── index.html           # Main calculator page
+│       └── partials/            # Jinja2 template partials
 ├── requirements.txt
 └── Dockerfile
 ```
@@ -105,10 +113,12 @@ Interactive docs (Swagger UI) will be at http://localhost:8000/docs.
 
 | Method | Path | Description |
 |--------|------|-------------|
+| GET | `/` | Web UI |
 | GET | `/health` | Health check |
 | GET | `/api/alpha_lists` | Lists elements available for alpha list calculations |
 | POST | `/api/alpha_lists` | Calculate neutron yield for a list of alpha energies |
 | GET | `/api/chain_lists` | Lists available chain lists for chain lists calculations |
 | POST | `/api/chain_lists` | Calculate neutron yield for a decay chain |
+| GET | `/api/materials` | Lists available preloaded materials |
 
 See `/docs` for full request/response schemas and example payloads.
